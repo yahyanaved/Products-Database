@@ -119,8 +119,8 @@
         </div>
     </div>
     <div class="container-fluid">
-  ...
-</div>
+        
+    </div>
 </body>
 
 </html>
