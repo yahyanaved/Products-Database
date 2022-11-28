@@ -1,25 +1,27 @@
 <?php
 // Include config file
 require_once "config.php";
- 
 // Define variables and initialize with empty values
  
 // Processing form data when form is submitted
 // Check input errors before inserting in database
-if ($_SERVER["REQUEST_METHOD"] == "POST"){
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["product_id"])){
     // Prepare an update statement
     try{
-        $temp= explode(".",$_POST['category']);
+        $temp= explode(".",$_POST["category"]);
         $stringquery = '';
         if($temp[0] = 'sc'){
             $stringquery = '`sc_id`';
+            $stringq2 = '`category_id` = NULL';
+
         }
         else{
             $stringquery = '`category_id`';
+            $stringq2 = '`sc_id` = NULL';
         }
         $p_name = $_POST["product_name"];
         $p_desc = $_POST['product_desc'];
-        $sql = "UPDATE products SET p_name = ?, p_desc =?, price =? ,stock = ?, $stringquery = ? WHERE products_id= ?";
+        $sql = "UPDATE products SET p_name = ?, p_desc = ?, price = ? ,stock = ?, $stringquery = ? , $stringq2 WHERE products_id = ?";
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
             mysqli_stmt_bind_param($stmt, "ssiiii", $p_name, $p_desc, $_POST["price"], $_POST["stock"], $temp[1], $_POST["product_id"]);
@@ -28,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
             // Attempt to execute the prepared statement
             if(mysqli_stmt_execute($stmt)){
                 // Records updated successfully. Redirect to landing page
-                header("location: index.php");
+                header("location: productadmin.php");
                 exit();
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
@@ -160,7 +162,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
                             <span class="invalid-feedback">
                             </span>
                         </div>
-                        <input type = "text" name = "product_id" class = "form-control" value = "<?php echo $product_id ?>">
+                        <label>Product ID</label>
+                        <input type = "hidden" name = "product_id" value = "<?php echo $product_id ?>">
                         <input type="submit" class="btn btn-primary" value="Submit">
                         <a href="index.php" class="btn btn-secondary ml-2">Cancel</a>
                     </form>
