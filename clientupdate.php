@@ -6,12 +6,13 @@ require_once "config.php";
  
 // Processing form data when form is submitted
 // Check input errors before inserting in database
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["client_id"])){
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['client_id'])){
     try{
     // Prepare an update statement
         $client_name = $_POST["client_name"];
         echo("DOG");
         $address = $_POST["address"];
+        $client_id = $_POST['client_id'];
         $phone_no = $_POST["phone_no"];
         $sql = "UPDATE clients as c SET c.client_name = ?, c.address = ?, c.phone_no = ? WHERE client_id = ?";
         if($stmt = mysqli_prepare($link, $sql)){
@@ -55,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["client_id"])){
 </head>
 <body>
     <?php
-    if($_SERVER["REQUEST_METHOD"] == "GET")
+    if($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["client_id"]))
     {
         ?>
         <div class="wrapper">
@@ -83,6 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["client_id"])){
                                 <span class="invalid-feedback">
                                 </span>
                             </div>
+                            <input type = "hidden" name = "client_id" value = "<?php echo $client_id ?>">
                             <div class="form-group">
                                 <label>Phone Number (eg:03......)</label>
                                 <input type="text" name="phone_no" class="form-control"
@@ -90,7 +92,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["client_id"])){
                                 <span class="invalid-feedback">
                                 </span>
                             </div>
-                            <input type = "hidden" name = "client_id" class = "form-control" value = "<?php echo $client_id ?>" disabled>
                             <input type="submit" class="btn btn-primary" value="Submit">
                             <a href="client.php" class="btn btn-secondary ml-2">Cancel</a>
                         </form>
