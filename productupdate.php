@@ -1,14 +1,6 @@
 <?php
 // Include config file
 require_once "config.php";
-function console_log($output, $with_script_tags = true) {
-    $js_code = 'console.log(' . json_encode($output, JSON_HEX_TAG) . 
-');';
-    if ($with_script_tags) {
-        $js_code = '<script>' . $js_code . '</script>';
-    }
-    echo $js_code;
-}
 // Define variables and initialize with empty values
  
 // Processing form data when form is submitted
