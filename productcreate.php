@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             mysqli_stmt_bind_param($stmt, "ssiiii", $input_product[0], $input_product[1], $input_product[2], $input_product[3], $input_product[4], $input_product[5]);
             if(mysqli_stmt_execute($stmt)){
                 // Records created successfully. Redirect to landing page
-                header("location: index.php");
+                header("location: productadmin.php");
                 exit();
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
