@@ -19,45 +19,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         $input_product = array($_POST['product_name'], $_POST['product_desc'], $temp[1],1, $_POST['price'], $_POST['stock'] | '1');
         $input_brand = array($_POST['brand_name'], $_POST['brand_desc']);
-        $sql = "SELECT * from brands where b_name = '$input_brand[0]'";
-        $result = mysqli_query($link, $sql);
         
         $sql = "INSERT INTO `project`.`products` (`p_name`,`p_desc`, " . $stringquery ." ,`brand_id`,`price`,`stock`) VALUES (?,?,?,?,?,?)";
-        if($stmt = mysqli_prepare($link, $sql)){
+        if ($stmt = mysqli_prepare($link, $sql)) {
             // Bind variables to the prepared statement as parameters
             mysqli_stmt_bind_param($stmt, "ssiiii", $input_product[0], $input_product[1], $input_product[2], $input_product[3], $input_product[4], $input_product[5]);
-            if(mysqli_stmt_execute($stmt)){
+            if (mysqli_stmt_execute($stmt)) {
                 // Records created successfully. Redirect to landing page
                 header("location: productadmin.php");
                 exit();
-            } else{
+            } else {
                 echo "Oops! Something went wrong. Please try again later.";
             }
         }
-        mysqli_stmt_close($stmt);
-        if (mysqli_query($link, $sql)) {
-
-        } else {
-            echo "INSERTION FAILED";
-        }
-        // $sql = "INSERT INTO brand VALUES (";
-        // for ($i = 0; $i < count($input_arr); $i++) {
-        //     $sql = $sql . $input_brand[$i] . ",";
-        // }
-        // $sql = $sql . ");";
-        // if (mysqli_query($link, $sql)) {
-
-        // } else {
-        //     echo "INSERTION FAILED";
-        // }
     } catch (Error $e) {
         echo $e;
     }
-    // Check input errors before inserting in database
-
-
-    // Close connection
-    //header('location:index.php');
+    header('location:index.php');
 }
 ?>
 
