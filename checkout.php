@@ -1,9 +1,29 @@
+<<?php
+require_once "config.php";
+if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['someAction']))
+{
+    $sql = "COMMIT";
+    if($stmt = mysqli_prepare($link, $sql))
+    {
+        if(mysqli_stmt_execute($stmt))
+        {
+            header("location: order.php");
+            exit();
+        } 
+        else
+        {
+            header("location: error.php");
+            exit();
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard</title>
+    <title>Order Summary</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -31,22 +51,23 @@
         });
     </script>
 </head>
-
 <body>
-    <h1 id='dashboard' class="text-inverse-secondary bg-secondary">Manage Orders</h1>
     <div class="wrapper">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="mt-5 mb-3 clearfix">
-                        <h2 class="pull-left">Orders</h2>
-                        <a href="ordercode.php" class="btn btn-success pull-right"><i class="fa fa-plus"></i> Add Orders</a>
+                <div class="mt-5 mb-3 clearfix">
+                        <h2 class="pull-left">Order Summary</h2>
                     </div>
                     <?php
                     // Include config file
                     require_once "config.php";
+                    $nonce = file_get_contents("nonce.txt");
                     $sql = "SELECT * from orders o inner join clients c on o.client_id = c.client_id
-                    inner join products p on p.products_id = o.product_id";
+                    inner join products p on p.products_id = o.product_id where o.nonce = '$nonce'";
+                    //$stmt = mysqli_prepare($link, $sql);
+                    //mysqli_stmt_bind_param($stmt, "s", $nonce);
+                    //$result = mysqli_stmt_execute($stmt);
                     $result = mysqli_query($link, $sql);
                     echo '<table class="table table-bordered table-striped">
                         ';
@@ -95,10 +116,7 @@
                                 <td>" . $row['amount'] . "</td>";
                         echo "
                                 <td>" . $row['quantity'] . "</td>";
-                        echo "
-                                <td>
-                                    ";
-                        echo '<a href="orderdelete.php?order_id=' . $row['order_id'] . '" title="Delete Record" data-toggle="tooltip"><span class="fa fa-trash"></span></a>';
+                
                         echo "
                                 </td>";
                         echo "
@@ -109,13 +127,18 @@
                     echo "
                     </table>";
                     ?>
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                        <div class="alert">
+                            <p>Are you sure you want to place order(s)?</p>
+                            <p>
+                                <input type="submit" value="Yes" name="someAction" class="btn btn-danger">
+                                <a href="rollback.php" class="btn btn-secondary">No</a>
+                            </p>
+                        </div>
+                    </form>
                 </div>
-            </div>
+            </div>        
         </div>
     </div>
-    <div class="container-fluid">
-        
-    </div>
 </body>
-
 </html>
