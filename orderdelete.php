@@ -5,14 +5,14 @@ if(isset($_POST["order_id"])){
     require_once "config.php";
     
     // Prepare a delete statement
-    $sql = "DELETE FROM order WHERE order_id = ?";
+    $sql = "DELETE FROM orders WHERE order_id = ?";
     
     if($stmt = mysqli_prepare($link, $sql)){
         // Bind variables to the prepared statement as parameters
         mysqli_stmt_bind_param($stmt, "i", $param_id);
         
         // Set parameters
-        $param_id = trim($_POST["product_id"]);
+        $param_id = trim($_POST["order_id"]);
         
         // Attempt to execute the prepared statement
         if(mysqli_stmt_execute($stmt)){
