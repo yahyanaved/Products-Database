@@ -8,33 +8,23 @@
 <title>Bootstrap Simple Login Form with Blue Background</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
 <link rel="stylesheet" type="text/css" href="css/signup.css">
 </head>
 <body>
 <div class="signup-form">
-    <form action="signup.php" method="POST">
-		<h2>Sign Up</h2>
-		<p>Please fill in this form to create an account!</p>
+    <form action="login.php" method="post">
+		<h2>Login</h2>
+		<p>Please enter Credentials!</p>
 		<hr>
-        <div class="form-group">
-			<div class="row">
-				<div class="col-xs-6"><input type="text" class="form-control" name="username" placeholder="username" required="required"></div>
-			</div>        	
-        </div>
+        <div class="col-xs-6"><input type="text" class="form-control" name="username" placeholder="username" required="required"></div>
 		<div class="form-group">
             <input type="password" class="form-control" name="password" placeholder="Password" required="required">
         </div>
 		<div class="form-group">
-            <input type="password" class="form-control" name="confirm_password" placeholder="Confirm Password" required="required">
-        </div>        
-		<div class="form-group">
-            <button type="submit" class="btn btn-primary btn-lg">Sign Up</button>
+            <button type="submit" class="btn btn-primary btn-lg">Login</button>
         </div>
     </form>
-	<div class="hint-text">Already have an account? <a href="loginpage.php">Login here</a></div>
 </div>
-<?php
-?>
 </body>
 </html>
