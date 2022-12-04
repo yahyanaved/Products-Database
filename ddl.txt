@@ -1,0 +1,118 @@
+drop database project;
+create database project;
+use project;
+DELIMITER $$
+CREATE FUNCTION qty_check(
+   qty int,
+    p_id int
+)
+RETURNS int
+READS SQL DATA
+DETERMINISTIC
+BEGIN
+DECLARE temp INT; 
+if(qty>(select stock from products where products_id=p_id)) then
+    return 0;
+else
+    return 1;
+end if; 
+END $$
+DELIMITER ;
+DELIMITER $$
+CREATE PROCEDURE qty_stock(
+   qty int,
+    p_id int
+)
+READS SQL DATA
+DETERMINISTIC
+BEGIN
+	update products set stock = stock - qty where products_id = p_id;
+END $$
+DELIMITER ;
+create table clients(client_id int, client_name varchar(15) NOT NULL, address varchar(100),phone_no char(11));
+alter table clients add constraint clients_pk primary key (client_id);
+alter table clients add constraint phone_check check (phone_no like '0%');
+alter table clients modify client_id int AUTO_INCREMENT;
+create table categories(category_id int, c_name varchar(20) NOT NULL,c_desc varchar(100));
+alter table categories add constraint categories_pk primary key (category_id);
+alter table categories modify category_id int AUTO_INCREMENT;
+create table subcategories(sc_id int,category_id int, sc_name varchar(20) NOT NULL,sc_desc varchar(100));
+alter table subcategories add constraint subcategories_pk primary key (sc_id);
+alter table subcategories add constraint subcategories_fk foreign key (category_id) references categories(category_id) on delete cascade on update cascade;
+alter table subcategories modify sc_id int AUTO_INCREMENT;
+create table brands(brand_id int, b_name varchar(20) NOT NULL,b_desc varchar(100));
+alter table brands add constraint brands_pk primary key (brand_id);
+alter table brands modify brand_id int AUTO_INCREMENT;
+create table products(products_id int, p_name varchar(20) NOT NULL,p_desc varchar(100), category_id int NOT NULL, sc_id int NOT NULL, brand_id int NOT NULL,price float NOT NULL,stock int NOT NULL);
+alter table products add constraint products_pk primary key (products_id);
+alter table products add constraint products_fk1 foreign key (brand_id) references brands(brand_id) on delete cascade on update cascade;
+alter table products add constraint products_fk2 foreign key (sc_id) references subcategories(sc_id) on delete cascade on update cascade;
+alter table products add constraint products_fk3 foreign key (category_id) references categories(category_id) on delete cascade on update cascade;
+alter table products modify products_id int AUTO_INCREMENT;
+create table orders(order_id int, client_id int, product_id int,quantity int NOT NULL, amount float,nonce varchar(100) NOT NULL);
+alter table orders add constraint orders_pk primary key (order_id);
+alter table orders add constraint orders_fk1 foreign key (client_id) references clients(client_id) on delete cascade on update cascade;
+alter table orders add constraint orders_fk2 foreign key (product_id) references products(products_id) on delete cascade on update cascade;
+alter table orders add constraint quantity_check check(quantity>0);
+DELIMITER $$
+CREATE TRIGGER order_placed
+AFTER INSERT
+ON orders FOR EACH ROW
+BEGIN
+    call qty_stock(new.quantity,new.product_id);
+END$$
+DELIMITER ;
+#alter table orders add constraint quantity_check2 check(qty_check(quantity,product_id)=1);
+alter table orders modify order_id int AUTO_INCREMENT;
+create table users(user_id int, user_name varchar(20), passphrase varchar(20) NOT NULL, permission char(5) NOT NULL DEFAULT 'r');
+alter table users add constraint users_pk primary key (user_id);
+alter table users modify user_id int AUTO_INCREMENT;
+alter table users add constraint UNIQUE (user_name);
+insert into clients (client_name,address,phone_no) values ('arham afzal','house 125 abc street','031402950');
+insert into clients (client_name,address,phone_no) values ('yahya naveed','house 153 csa street','0345474553');
+insert into clients (client_name,address,phone_no) values ('faizan khan','house 745 yrt street','031745750');
+insert into categories (c_name,c_desc) values ('mother board','a printed circuit board with connectors for other circuit boards to be slotted into');
+insert into categories(c_name,c_desc) values ('cpu','the control unit or the brains for the computer');
+insert into categories (c_name,c_desc) values ('gpu','the unit which provides for the graphical visualization of the output');
+insert into categories (c_name,c_desc) values ('storage','the unit which acounts for storing of data');
+insert into categories (c_name,c_desc) values ('ram','the accessible memory for current proccesses');
+insert into categories (c_name,c_desc) values ('psu','the power unit for the computer system');
+insert into subcategories (category_id,sc_name,sc_desc) values ((select category_id from categories where c_name = 'mother board'),'generic mobo','a mother board for regular office/educational use');
+insert into subcategories (category_id,sc_name,sc_desc) values ((select category_id from categories where c_name = 'mother board'),'gaming mobo','best suited for gaming with active heat sinks and connectivity');
+insert into subcategories (category_id,sc_name,sc_desc) values ((select category_id from categories where c_name = 'psu'),'hybrid psu','a middleground between passively-cooled and actively cooled PSU');
+insert into subcategories (category_id,sc_name,sc_desc) values ((select category_id from categories where c_name = 'psu'),'modular psu',' a power supply where some or all of its cables and connectors are detachable');
+insert into subcategories (category_id,sc_name,sc_desc) values ((select category_id from categories where c_name = 'cpu'),'generic cpu','a gpu better suited for editing and streaming');
+insert into subcategories (category_id,sc_name,sc_desc) values ((select category_id from categories where c_name = 'gpu'),'gaming gpu','a gpu better suited for gaming');
+insert into subcategories (category_id,sc_name,sc_desc) values ((select category_id from categories where c_name = 'gpu'),'rendering gpu','a gpu better suited for editing and streaming');
+insert into subcategories (category_id,sc_name,sc_desc) values ((select category_id from categories where c_name = 'storage'),'ssd','a solid state drive for fast access of data');
+insert into subcategories (category_id,sc_name,sc_desc) values ((select category_id from categories where c_name = 'storage'),'hdd','a magnetic drive that provides a slower access');
+insert into subcategories (category_id,sc_name,sc_desc) values ((select category_id from categories where c_name = 'ram'),'dram','a dynamic ram');
+insert into subcategories (category_id,sc_name,sc_desc) values ((select category_id from categories where c_name = 'ram'),'sram','a static ram');
+insert into brands (b_name,b_desc) values('intel',' a carolina based company that is one of the leading tech giants');
+insert into brands (b_name,b_desc) values('nvidia','NVIDIA Corporation is an American multinational technology company incorporated in Delaware');
+insert into brands (b_name,b_desc) values('amd','AMD Radeon Software is a device driver and utility software package for Advanced Micro Devices');
+insert into brands (b_name,b_desc) values('china','the cheapest brand out there you can find');
+insert into products (p_name,p_desc,category_id,sc_id,brand_id,price,stock) values('A250','AMD A520 (Ryzen AM4) micro ATX motherboard with M.2 support',1,5,3,16500,14);
+insert into products (p_name,p_desc,category_id,sc_id,brand_id,price,stock) values('F934','nvidia F934 mother board for a cool look',1,5,2,18000,10);
+insert into products (p_name,p_desc,category_id,sc_id,brand_id,price,stock) values('C654','intel i7 7th gen processor',2,5,1,9000,12);
+insert into products (p_name,p_desc,category_id,sc_id,brand_id,price,stock) values('D354','intel i7 10th gen processor',2,5,1,20000,24);
+insert into products (p_name,p_desc,category_id,sc_id,brand_id,price,stock) values('R543','a static ram with 8GB storage',5,4,4,8000,15);
+insert into users (user_name,passphrase,permission)  values('admin','admin','rw');
+insert into users (user_name,passphrase) values('user1','user1');
+insert into users (user_name,passphrase) values('user2','user2');
+insert into orders (client_id,product_id,quantity,amount,nonce) values(2,1,3,49500,'b');
+insert into orders (client_id,product_id,quantity,amount,nonce) values(3,4,1,20000,'c');
+insert into orders (client_id,product_id,quantity,amount,nonce) values(3,4,1,20000,'aaaaaaaaa');
+truncate table users;
+insert into users (user_name,passphrase,permission) values ('admin','admin','rw');
+insert into users (user_name,passphrase) values ('arham','arham');
+select * from users;
+select * from subcategories;
+select * from categories;
+select * from products;
+select * from orders;
+select * from brands;
+select * from clients;
+start transaction;
+savepoint cart;
+rollback to cart;
