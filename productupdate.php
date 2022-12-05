@@ -26,6 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["product_id"])){
             
             // Set parameters
             // Attempt to execute the prepared statement
+            //adding a comment to commit
             if(mysqli_stmt_execute($stmt)){
                 // Records updated successfully. Redirect to landing page
                 header("location: productadmin.php");

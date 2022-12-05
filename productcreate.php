@@ -22,6 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql = "INSERT INTO `project`.`products` (`p_name`,`p_desc`, `sc_id` ,`brand_id`,`price`,`stock`) VALUES (?,?,?,?,?,?)";
         if ($stmt = mysqli_prepare($link, $sql)) {
             // Bind variables to the prepared statement as parameters
+            //adding a comment so i can stage changes
             mysqli_stmt_bind_param($stmt, "ssiiii", $input_product[0], $input_product[1], $input_product[2],$bid['brand_id'] , $input_product[3], $input_product[4]);
             if (mysqli_stmt_execute($stmt)) {
                 // Records created successfully. Redirect to landing page

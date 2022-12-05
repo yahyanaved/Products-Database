@@ -50,6 +50,7 @@
                     left join subcategories s on s.sc_id = p.sc_id";
                     $result = mysqli_query($link, $sql);
                     // Attempt select query execution
+                    //adding a comment to commit
                     echo '<table class="table table-bordered table-striped">
                         ';
                     echo "

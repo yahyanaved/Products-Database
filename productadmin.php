@@ -45,11 +45,10 @@
                     <?php
                     // Include config file
                     require_once "config.php";
-                    $sql = "SELECT products_id,p_name, p_desc, c_name, sc_name, b_name, price,stock 
+                    $sql = "SELECT products_id,p_name, p_desc, sc_name, b_name, price,stock 
                     from products p 
                     inner join brands b on b.brand_id = p.brand_id 
-                    left join subcategories s on s.sc_id = p.sc_id
-                    left join categories c on s.category_id = c.category_id";
+                    left join subcategories s on s.sc_id = p.sc_id";
                     $result = mysqli_query($link, $sql);
                     // Attempt select query execution
                     echo '<table class="table table-bordered table-striped">
@@ -64,8 +63,6 @@
                                 <th>Product Name</th>";
                     echo "
                                 <th>Product Description</th>";
-                    echo "
-                                <th>Category Name</th>";
                     echo "
                                 <th>Sub Category Name</th>";
                     echo "
@@ -89,8 +86,6 @@
                                 <td>" . $row['p_name'] . "</td>";
                         echo "
                                 <td>" . $row['p_desc'] . "</td>";
-                        echo "
-                                <td>" . $row['c_name'] . "</td>";
                         echo "
                                 <td>" . $row['sc_name'] . "</td>";
                         echo "
