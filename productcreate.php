@@ -9,18 +9,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validate name
 
     try {
-        $temp= explode(".",$_POST['category']);
-        $stringquery = '';
-        if($temp[0] = 'sc'){
-            $stringquery = '`sc_id`';
-        }
-        else{
-            $stringquery = '`category_id`';
-        }
-        $input_product = array($_POST['product_name'], $_POST['product_desc'], $temp[1],1, $_POST['price'], $_POST['stock'] | '1');
-        $input_brand = array($_POST['brand_name'], $_POST['brand_desc']);
+        $input_product = array($_POST['product_name'], $_POST['product_desc'], $_POST['category'],1, $_POST['price'], $_POST['stock'] | '1');
         
-        $sql = "INSERT INTO `project`.`products` (`p_name`,`p_desc`, " . $stringquery ." ,`brand_id`,`price`,`stock`) VALUES (?,?,?,?,?,?)";
+        $sql = "INSERT INTO `project`.`products` (`p_name`,`p_desc`, `sc_id` ,`brand_id`,`price`,`stock`) VALUES (?,?,?,?,?,?)";
         if ($stmt = mysqli_prepare($link, $sql)) {
             // Bind variables to the prepared statement as parameters
             mysqli_stmt_bind_param($stmt, "ssiiii", $input_product[0], $input_product[1], $input_product[2], $input_product[3], $input_product[4], $input_product[5]);
@@ -62,26 +53,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <h2 class="mt-5">Create Record</h2>
                     <p>Please fill this form and submit to add product to the database.</p>
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-                        <?php
-                        $sql = "SELECT category_id, c_name FROM categories;";
-                        if ($result = mysqli_query($link, $sql)) {
-                            if (mysqli_num_rows($result) > 0) {
-                                $i = 0;
-                                while ($row = mysqli_fetch_array($result)) {
-                                    $i++;
-                        ?>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="category" id="flexRadioDefault1"
-                                value="<?php echo "c.". $row['category_id'] ?>">
-                            <label class="form-check-label" for="flexRadioDefault1">
-                                <?php echo $row['c_name']; ?>
-                            </label>
-                        </div>
-                        <?php }
-
-                            }
-                        }
-                        ?>
                         <h2>Sub Categories </h2>
                         <?php
                         $sql = "SELECT sc_id, sc_name FROM subcategories;";
@@ -93,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         ?>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="category" id="flexRadioDefault1"
-                                value="<?php echo "sc.".$row['sc_id'] ?>">
+                                value="<?php echo $row['sc_id'] ?>" required = "required">
                             <label class="form-check-label" for="flexRadioDefault1">
                                 <?php echo $row['sc_name']; ?>
                             </label>

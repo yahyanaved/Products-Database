@@ -8,23 +8,12 @@ require_once "config.php";
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["product_id"])){
     // Prepare an update statement
     try{
-        $temp= explode(".",$_POST["category"]);
-        $stringquery = '';
-        if($temp[0] = 'sc'){
-            $stringquery = '`sc_id`';
-            $stringq2 = '`category_id` = NULL';
-
-        }
-        else{
-            $stringquery = '`category_id`';
-            $stringq2 = '`sc_id` = NULL';
-        }
         $p_name = $_POST["product_name"];
         $p_desc = $_POST['product_desc'];
-        $sql = "UPDATE products SET p_name = ?, p_desc = ?, price = ? ,stock = ?, $stringquery = ? , $stringq2 WHERE products_id = ?";
+        $sql = "UPDATE products SET p_name = ?, p_desc = ?, price = ? ,stock = ?, `sc_id` = ? WHERE products_id = ?";
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "ssiiii", $p_name, $p_desc, $_POST["price"], $_POST["stock"], $temp[1], $_POST["product_id"]);
+            mysqli_stmt_bind_param($stmt, "ssiiii", $p_name, $p_desc, $_POST["price"], $_POST["stock"], $_POST['category'], $_POST["product_id"]);
             
             // Set parameters
             // Attempt to execute the prepared statement
@@ -78,31 +67,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["product_id"])){
                     from products p 
                     inner join brands b on b.brand_id = p.brand_id 
                     left join subcategories s on s.sc_id = p.sc_id
-                    left join categories c on c.category_id = p.category_id OR s.category_id = c.category_id where p.products_id = $product_id;";
+                    left join categories c on s.category_id = c.category_id where p.products_id = $product_id;";
                     $values = mysqli_query($link,$sql);
                     $row1 = mysqli_fetch_array($values, MYSQLI_ASSOC)
                     ?>
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-                        <?php
-                        $sql = "SELECT category_id, c_name FROM categories;";
-                        if ($result = mysqli_query($link, $sql)) {
-                            if (mysqli_num_rows($result) > 0) {
-                                $i = 0;
-                                while ($row = mysqli_fetch_array($result)) {
-                                    $i++;
-                        ?>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="category" id="flexRadioDefault1"
-                                value="<?php echo "c.". $row['category_id'] ?>" required = "required">
-                            <label class="form-check-label" for="flexRadioDefault1">
-                                <?php echo $row['c_name']; ?>
-                            </label>
-                        </div>
-                        <?php }
-
-                            }
-                        }
-                        ?>
                         <h2>Sub Categories </h2>
                         <?php
                         $sql = "SELECT sc_id, sc_name FROM subcategories;";
@@ -114,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["product_id"])){
                         ?>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="category" id="flexRadioDefault1"
-                                value="<?php echo "sc.".$row["sc_id"] ?>">
+                                value="<?php echo $row["sc_id"] ?>">
                             <label class="form-check-label" for="flexRadioDefault1">
                                 <?php echo $row['sc_name']; ?>
                             </label>
@@ -162,7 +131,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["product_id"])){
                             <span class="invalid-feedback">
                             </span>
                         </div>
-                        <label>Product ID</label>
                         <input type = "hidden" name = "product_id" value = "<?php echo $product_id ?>">
                         <input type="submit" class="btn btn-primary" value="Submit">
                         <a href="index.php" class="btn btn-secondary ml-2">Cancel</a>

@@ -49,7 +49,7 @@
                     from products p 
                     inner join brands b on b.brand_id = p.brand_id 
                     left join subcategories s on s.sc_id = p.sc_id
-                    left join categories c on c.category_id = p.category_id OR s.category_id = c.category_id";
+                    left join categories c on s.category_id = c.category_id";
                     $result = mysqli_query($link, $sql);
                     // Attempt select query execution
                     echo '<table class="table table-bordered table-striped">
