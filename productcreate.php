@@ -9,12 +9,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validate name
 
     try {
-        $input_product = array($_POST['product_name'], $_POST['product_desc'], $_POST['category'],1, $_POST['price'], $_POST['stock'] | '1');
-        
+        $input_product = array($_POST['product_name'], $_POST['product_desc'], $_POST['category'],$_POST['price'], $_POST['stock']);
+        $module = $_POST[ 'brand_name' ];
+        $query = "SELECT brand_id from brands where b_name = '{$module}'";
+        $result = mysqli_query($link, $query);
+        $bid = mysqli_fetch_assoc($result);
+        echo $bid['brand_id'];
+        if(is_null($bid['brand_id']))
+        {
+            header("location: error.php");
+        }
         $sql = "INSERT INTO `project`.`products` (`p_name`,`p_desc`, `sc_id` ,`brand_id`,`price`,`stock`) VALUES (?,?,?,?,?,?)";
         if ($stmt = mysqli_prepare($link, $sql)) {
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "ssiiii", $input_product[0], $input_product[1], $input_product[2], $input_product[3], $input_product[4], $input_product[5]);
+            mysqli_stmt_bind_param($stmt, "ssiiii", $input_product[0], $input_product[1], $input_product[2],$bid['brand_id'] , $input_product[3], $input_product[4]);
             if (mysqli_stmt_execute($stmt)) {
                 // Records created successfully. Redirect to landing page
                 header("location: productadmin.php");
@@ -89,12 +97,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="form-group">
                             <label>Brand Name</label>
                             <input type="text" name="brand_name" class="form-control">
-                            <span class="invalid-feedback">
-                            </span>
-                        </div>
-                        <div class="form-group">
-                            <label>Brand Description</label>
-                            <input type="text" name="brand_desc" class="form-control">
                             <span class="invalid-feedback">
                             </span>
                         </div>

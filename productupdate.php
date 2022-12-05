@@ -10,10 +10,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["product_id"])){
     try{
         $p_name = $_POST["product_name"];
         $p_desc = $_POST['product_desc'];
-        $sql = "UPDATE products SET p_name = ?, p_desc = ?, price = ? ,stock = ?, `sc_id` = ? WHERE products_id = ?";
+        $module = $_POST[ 'brand_name' ];
+        $query = "SELECT brand_id from brands where b_name = '{$module}'";
+        $result = mysqli_query($link, $query);
+        $bid = mysqli_fetch_assoc($result);
+        echo $bid['brand_id'];
+        if(is_null($bid['brand_id']))
+        {
+            header("location: error.php");
+        }
+        $sql = "UPDATE products SET p_name = ?, p_desc = ?, price = ? ,stock = ?, `sc_id` = ?, brand_id = ? WHERE products_id = ?";
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "ssiiii", $p_name, $p_desc, $_POST["price"], $_POST["stock"], $_POST['category'], $_POST["product_id"]);
+            mysqli_stmt_bind_param($stmt, "ssiiiii", $p_name, $p_desc, $_POST["price"], $_POST["stock"], $_POST['category'],$bid['brand_id'], $_POST["product_id"]);
             
             // Set parameters
             // Attempt to execute the prepared statement
@@ -109,13 +118,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["product_id"])){
                             <label>Brand Name</label>
                             <input type="text" name="brand_name" class="form-control"
                                 value="<?php echo $row1["b_name"]?>">
-                            <span class="invalid-feedback">
-                            </span>
-                        </div>
-                        <div class="form-group">
-                            <label>Brand Description</label>
-                            <input type="text" name="brand_desc" class="form-control"
-                                value="<?php echo $row1['b_desc']?>">
                             <span class="invalid-feedback">
                             </span>
                         </div>
